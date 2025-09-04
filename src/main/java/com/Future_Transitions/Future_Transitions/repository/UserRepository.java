@@ -3,5 +3,11 @@ package com.Future_Transitions.Future_Transitions.repository;
 import com.Future_Transitions.Future_Transitions.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    boolean existsByEmail(long id);
+
+    Optional<User> findByEmail(String email);
 }
