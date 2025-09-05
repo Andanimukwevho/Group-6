@@ -1,7 +1,9 @@
 package com.Future_Transitions.Future_Transitions.dto;
 
 import com.Future_Transitions.Future_Transitions.model.Province;
+import lombok.Data;
 
+@Data
 public class UserDTO {
 
     private String name;
