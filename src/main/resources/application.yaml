@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: Future-Transitions
+
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=future-vision;encrypt=false
+    username: sa
+    password: cya.khu1955
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+
+jwt:
+  secret: JDDwnyo4Bt99yxC3Jh/dol6XN9hkaeoqzANPE2eDg3bEq83JSYoOpBDHVbvV5faD1FL+wcbczfsnegRynV+8tg==
