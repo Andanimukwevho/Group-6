@@ -12,36 +12,25 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-@Service
-
-public class UserService implements UserDetailsService {
-
-    private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username).orElseThrow();
-    }
+import java.util.Optional;
 
 
+public interface UserService extends UserDetailsService {
 
-//    public User createUser(User user) {
-//        return userRepository.save(user);
-//    }
-//
-//
-//    public List<User> getallUsers() {
-//        return userRepository.findAll();
-//    }
-//
-//    public User getUserById(Long id){
-//        return userRepository.findById(id)
-//        .orElseThrow(()-> new RuntimeException("Student not found" + id));
-//    }
+    User create(User user);
+
+   Optional<User> findByEmail(String email);
+
+   List<User>getAllUsers();
+
+   User updateUser(String email , User updateUser);
+
+   User changePassword(String email , User changePassword);
+
+   void deleteUser(String email);
+
+   boolean existByEmail(String email);
+
 }
 
 

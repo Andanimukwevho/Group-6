@@ -5,31 +5,51 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 
 @Component
 public class JWTServiceImp implements JWTService {
 
-    private static final long EXPIRATION_TIME = 86400000; // 24 hours
-    private final SecretKey key;
 
-    public JWTServiceImp() {
-        byte[] keyBytes = Decoders.BASE64.decode("Nkd52ChnpGlnqEVxxrgSoGlLrcShEEBY");
+    @Value("${jwt.secret}")
+    private String secret;
+
+    private Key key;
+
+    @PostConstruct
+    public void init() {
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
-    }
 
+    }
+    private static final long EXPIRATION_TIME = 86400000; // 24 hours
 
     public String generateToken(UserDetails userDetails){
-        return Jwts.builder().setSubject(userDetails.getUsername())
+
+        HashMap<String, Object> claims = new HashMap<>();
+        var roles = userDetails.getAuthorities()
+                .stream()
+                .map(auth -> auth.getAuthority())
+                .toList();
+
+        claims.put("roles", roles);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt((new Date(System.currentTimeMillis())))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(getSignKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
@@ -42,7 +62,7 @@ public class JWTServiceImp implements JWTService {
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + refreshExpirationTime))
-                .signWith(key , SignatureAlgorithm.HS256)
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -54,13 +74,17 @@ public class JWTServiceImp implements JWTService {
         return claimsResolver.apply(claims);
     }
 
+    public List<String> extractRoles(String token) {
+        Claims claims = extractAllClaim(token);
+        return claims.get("roles", List.class);
+    }
+
     private Claims extractAllClaim(String token) {
         return Jwts.parser().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody();
     }
 
     private Key getSignKey() {
-        byte[] key = Decoders.BASE64.decode("Nkd52ChnpGlnqEVxxrgSoGlLrcShEEBY");
-        return Keys.hmacShaKeyFor(key);
+        return key;
         }
 
         public  boolean isTokenValid(String token, UserDetails userDetails ){
