@@ -2,15 +2,10 @@ package com.Future_Transitions.Future_Transitions.model;
 
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
 import java.util.*;
 import java.util.stream.Collectors;
-
-
 
 public enum Role {
 
@@ -27,9 +22,8 @@ public enum Role {
 
     Role(Set<Permission> permissions) {
         this.permissions = permissions;
-
     }
-    // you get the grantedAuthority based on permissions and role name like user and admin
+    // you only get granted permission based on role since we have USER and ADMIN  only or u get 401 not authories
     public List<GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = permissions
                 .stream()

@@ -8,6 +8,12 @@ spring:
     password: cya.khu1955
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 15MB
+
+
   jpa:
     show-sql: true
     hibernate:
@@ -16,5 +22,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.SQLServerDialect
 
+
 jwt:
   secret: JDDwnyo4Bt99yxC3Jh/dol6XN9hkaeoqzANPE2eDg3bEq83JSYoOpBDHVbvV5faD1FL+wcbczfsnegRynV+8tg==
+
+file:
+  upload-dir: uploads/

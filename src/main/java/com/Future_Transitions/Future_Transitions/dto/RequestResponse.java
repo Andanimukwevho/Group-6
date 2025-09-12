@@ -2,12 +2,13 @@ package com.Future_Transitions.Future_Transitions.dto;
 
 import com.Future_Transitions.Future_Transitions.model.Role;
 import com.Future_Transitions.Future_Transitions.model.User;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-
 import java.util.List;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+
 @Data
 public class RequestResponse {
-
 
     private String name;
     private String surname;
@@ -25,7 +26,6 @@ public class RequestResponse {
     private List<User> UserList ;
     private List<String> roles;
     private String redirectUrl;
-
 
     public String getPhoneNumber() {
         return phoneNumber;
@@ -139,6 +139,4 @@ public class RequestResponse {
     public void setUserList(List<User> userList) {
         UserList = userList;
     }
-
-
 }
