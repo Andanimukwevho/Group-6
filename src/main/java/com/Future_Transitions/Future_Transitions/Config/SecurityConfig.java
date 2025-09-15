@@ -2,8 +2,8 @@ package com.Future_Transitions.Future_Transitions.Config;
 
 import com.Future_Transitions.Future_Transitions.service.Imp.UserServiceImp;
 import com.Future_Transitions.Future_Transitions.service.JWTService;
+import com.Future_Transitions.Future_Transitions.service.JWTServiceImp;
 import com.Future_Transitions.Future_Transitions.service.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,8 +39,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter(JWTService jwtService , UserService userService) {
-        return new JwtAuthenticationFilter(jwtService , userService);
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JWTService jwtService , UserService userService , JWTServiceImp jwtServiceImp) {
+        return new JwtAuthenticationFilter(jwtService , userService , jwtServiceImp);
     }
 
     @Bean

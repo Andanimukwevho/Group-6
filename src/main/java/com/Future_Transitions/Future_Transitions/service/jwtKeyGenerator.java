@@ -2,7 +2,6 @@ package com.Future_Transitions.Future_Transitions.service;
 
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-
 import javax.crypto.SecretKey;
 import java.util.Base64;
 

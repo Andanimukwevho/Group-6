@@ -1,10 +1,7 @@
 package com.Future_Transitions.Future_Transitions.service.Imp;
 
 
-import com.Future_Transitions.Future_Transitions.dto.LoginDTO;
-import com.Future_Transitions.Future_Transitions.dto.RefreshedTokenRequest;
-import com.Future_Transitions.Future_Transitions.dto.RegisterDTO;
-import com.Future_Transitions.Future_Transitions.dto.RequestResponse;
+import com.Future_Transitions.Future_Transitions.dto.*;
 import com.Future_Transitions.Future_Transitions.model.Role;
 import com.Future_Transitions.Future_Transitions.model.User;
 import com.Future_Transitions.Future_Transitions.repository.UserRepository;
@@ -14,7 +11,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -77,10 +73,8 @@ public class AuthenticationServiceImp implements AuthenticationService {
         return resp;
     }
 
-
-
-    public RequestResponse login(LoginDTO LoginDTO){
-        RequestResponse response = new RequestResponse();
+    public LoginResponse login(LoginDTO LoginDTO){
+        LoginResponse response = new LoginResponse();
 
         try{
         authenticationManager
@@ -163,7 +157,6 @@ public class AuthenticationServiceImp implements AuthenticationService {
         }
     }
 
-
     public RequestResponse getUsersByEmail(String email) {
         RequestResponse reqRes = new RequestResponse();
         try {
@@ -177,7 +170,6 @@ public class AuthenticationServiceImp implements AuthenticationService {
         }
         return reqRes;
     }
-
 
     public RequestResponse deleteUser(String email) {
         RequestResponse reqRes = new RequestResponse();

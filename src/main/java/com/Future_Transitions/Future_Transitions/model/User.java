@@ -4,30 +4,23 @@ package com.Future_Transitions.Future_Transitions.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="user-table")
+@Table(name="user_table")
 public class User implements UserDetails {
-
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-
-    private long Id;
-
-
-
+    private long id;
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -49,10 +42,24 @@ public class User implements UserDetails {
     private String email;
     @NotNull(message = "Age is required")
     private Integer age;
-        @NotNull(message = "Phone number is required")
-    private int phoneNumber;
+        @NotBlank(message = "Phone number is required")
+    private String phoneNumber;
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobOpening> createdJobs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Application> applications = new ArrayList<>();
+
+    public List<JobOpening> getCreatedJobs() {
+        return createdJobs;
+    }
+
+    public void setCreatedJobs(List<JobOpening> createdJobs) {
+        this.createdJobs = createdJobs;
+    }
 
     public String getName() {
         return name;
@@ -97,11 +104,11 @@ public class User implements UserDetails {
         this.age = age;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -113,11 +120,11 @@ public class User implements UserDetails {
         this.role = role;
     }
     public long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(long id) {
-        Id = id;
+        this.id = id;
     }
 
     public Province getProvince() {
@@ -128,22 +135,9 @@ public class User implements UserDetails {
         this.province = province;
     }
 
-
-
-
-
-
-
-
-
-//   @OneToMany(mappedBy = "user")
-
-//    @OneToMany(mappedBy = "user")
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
     }
 
     @Override
@@ -175,5 +169,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 }

@@ -1,16 +1,10 @@
 package com.Future_Transitions.Future_Transitions.dto;
 
 import com.Future_Transitions.Future_Transitions.model.Province;
-import com.Future_Transitions.Future_Transitions.model.Role;
-import com.Future_Transitions.Future_Transitions.model.User;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,7 +14,7 @@ public class RegisterDTO {
     private String surname;
     private String address;
     private String email;
-    private int phoneNumber;
+    private String phoneNumber;
 //    @Pattern(
 //            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&]{8,}$",
 //            message = "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a digit, and a special character")
@@ -45,9 +39,6 @@ public class RegisterDTO {
     public void setProvince(Province province) {
         this.province = province;
     }
-
-
-
 
     public String getName() {
         return name;
@@ -82,11 +73,11 @@ public class RegisterDTO {
         this.email = email;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -105,7 +96,5 @@ public class RegisterDTO {
     public void setMessage(String message) {
         this.message = message;
     }
-
-
 }
 
