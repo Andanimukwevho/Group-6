@@ -20,7 +20,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RequestMapping("/api/auth")
 @CrossOrigin("*")
-
 @RestController
 public class AuthenticateController {
 

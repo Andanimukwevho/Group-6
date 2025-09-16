@@ -13,7 +13,6 @@ spring:
       max-file-size: 5MB
       max-request-size: 15MB
 
-
   jpa:
     show-sql: true
     hibernate:
@@ -22,9 +21,27 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.SQLServerDialect
 
+  mail:
+    host: smtp.gmail.com               # the type of email we send the email
+    port: 587
+    username: syambolazi@gmail.com    # my normal email
+    password: sxmlqtkmfmkidkcd       # password from app password not my actual email password
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: "*"     #to avoid certification check
 
 jwt:
   secret: JDDwnyo4Bt99yxC3Jh/dol6XN9hkaeoqzANPE2eDg3bEq83JSYoOpBDHVbvV5faD1FL+wcbczfsnegRynV+8tg==
 
 file:
   upload-dir: uploads/
+
+app:
+  reset-password:
+    url: https://yourfrontend.com/reset-password

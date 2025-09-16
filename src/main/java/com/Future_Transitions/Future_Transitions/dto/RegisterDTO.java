@@ -3,6 +3,7 @@ package com.Future_Transitions.Future_Transitions.dto;
 import com.Future_Transitions.Future_Transitions.model.Province;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -15,9 +16,9 @@ public class RegisterDTO {
     private String address;
     private String email;
     private String phoneNumber;
-//    @Pattern(
-//            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&]{8,}$",
-//            message = "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a digit, and a special character")
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&]{8,}$",
+            message = "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a digit, and a special character")
     private String password;
     private String message;
     private Integer age;

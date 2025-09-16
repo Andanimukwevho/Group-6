@@ -5,9 +5,7 @@ import com.Future_Transitions.Future_Transitions.model.Application;
 import com.Future_Transitions.Future_Transitions.repository.ApplicationRepository;
 import com.Future_Transitions.Future_Transitions.service.ApplicationService;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 @Service

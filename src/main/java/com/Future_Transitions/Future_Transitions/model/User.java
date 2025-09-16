@@ -19,7 +19,8 @@ import java.util.List;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
+    @SequenceGenerator(name = "user_seq", sequenceName = "user_table_seq", allocationSize = 1)
     private long id;
 
     @NotBlank(message = "Name is required")
@@ -30,12 +31,10 @@ public class User implements UserDetails {
     private String address;
     @Enumerated(EnumType.STRING)
     private Province province;
-    //    @NotNull(message = "student result are needed")
-//    private double universityresult;
-//    @NotBlank(message = "Password is required")
-//    @Pattern(
-//             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&]{8,}$",
-//             message = "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a digit, and a special character")
+    @NotBlank(message = "Password is required")
+    @Pattern(
+             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&]{8,}$",
+             message = "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a digit, and a special character")
     private String password;
     @Email(message = "Email should be valid")
     @Column(unique = true)

@@ -19,6 +19,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("api/auth")
+@CrossOrigin("*")
 public class ApplicationController {
 
     private final FileStorageService fileStorageService;
