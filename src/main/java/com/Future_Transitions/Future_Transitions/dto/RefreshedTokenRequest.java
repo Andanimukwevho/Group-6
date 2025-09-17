@@ -1,6 +1,5 @@
 package com.Future_Transitions.Future_Transitions.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 

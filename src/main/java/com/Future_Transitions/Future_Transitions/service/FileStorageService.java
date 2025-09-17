@@ -13,7 +13,6 @@ import java.util.UUID;
 @Service
 public class FileStorageService {
 
-
     private final Path uploadDir = Paths.get("uploads");
 
     public FileStorageService() throws IOException {
