@@ -2,6 +2,7 @@ package com.Future_Transitions.Future_Transitions.service.Imp;
 
 
 import com.Future_Transitions.Future_Transitions.dto.*;
+import com.Future_Transitions.Future_Transitions.model.Application;
 import com.Future_Transitions.Future_Transitions.model.Role;
 import com.Future_Transitions.Future_Transitions.model.User;
 import com.Future_Transitions.Future_Transitions.repository.UserRepository;
@@ -13,7 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -23,7 +26,6 @@ public class AuthenticationServiceImp implements AuthenticationService {
     private final JWTServiceImp jwtServiceImp;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
-
 
 
     public AuthenticationServiceImp(UserRepository userRepository, JWTServiceImp jwtServiceImp, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
@@ -73,15 +75,15 @@ public class AuthenticationServiceImp implements AuthenticationService {
         return resp;
     }
 
-    public LoginResponse login(LoginDTO LoginDTO){
+    public LoginResponse login(LoginDTO LoginDTO) {
         LoginResponse response = new LoginResponse();
 
-        try{
-        authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(LoginDTO.getEmail(),LoginDTO.getPassword()));
-        var user = userRepository.findByEmail(LoginDTO.getEmail()).orElseThrow();
-        var jwt = jwtServiceImp.generateToken(user);
-        var refreshedToken = jwtServiceImp.generateRefreshToken(new HashMap<>(),user);
+        try {
+            authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(LoginDTO.getEmail(), LoginDTO.getPassword()));
+            var user = userRepository.findByEmail(LoginDTO.getEmail()).orElseThrow();
+            var jwt = jwtServiceImp.generateToken(user);
+            var refreshedToken = jwtServiceImp.generateRefreshToken(new HashMap<>(), user);
 
 
             String roleName = user.getRole().name(); // e.g. "ADMIN" or "USER"
@@ -94,28 +96,28 @@ public class AuthenticationServiceImp implements AuthenticationService {
 
             };
 
-        response.setStatusCode(200);
-        response.setToken(jwt);
-        response.setRole(user.getRole());
-        response.setRefreshToken(refreshedToken);
-        response.setExpirationTime("24Hrs");
-        response.setMessage("Successfully Logged In");
+            response.setStatusCode(200);
+            response.setToken(jwt);
+            response.setRole(user.getRole());
+            response.setRefreshToken(refreshedToken);
+            response.setExpirationTime("24Hrs");
+            response.setMessage("Successfully Logged In");
 
-    }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             response.setStatusCode(500);
             response.setMessage(e.getMessage());
-    }
+        }
         return response;
-}
+    }
 
     // we validate and generate new token
 //    public RequestResponse refreshToken(RefreshedTokenRequest refreshTokenRequest) {
 //        String token = refreshTokenRequest.getRefreshedToken();
 
-    public RequestResponse refreshToken(RefreshedTokenRequest refreshTokenRequest){
+    public RequestResponse refreshToken(RefreshedTokenRequest refreshTokenRequest) {
         RequestResponse response = new RequestResponse();
-        try{
+        try {
             String ourEmail = jwtServiceImp.extractUserName(refreshTokenRequest.getRefreshedToken());
             User users = userRepository.findByEmail(ourEmail).orElseThrow();
             if (jwtServiceImp.isTokenValid(refreshTokenRequest.getRefreshedToken(), users)) {
@@ -129,7 +131,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
             response.setStatusCode(200);
             return response;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setStatusCode(500);
             response.setMessage(e.getMessage());
             return response;
@@ -193,19 +195,31 @@ public class AuthenticationServiceImp implements AuthenticationService {
         return reqRes;
     }
 
-    public RequestResponse updateUser(String email, User updatedUser) {
+    public RequestResponse updateUser(String email, User updatedUser, boolean isFullUpdate) {
         RequestResponse reqRes = new RequestResponse();
         try {
             Optional<User> userOptional = userRepository.findByEmail(email);
             if (userOptional.isPresent()) {
                 User existingUser = userOptional.get();
-                existingUser.setEmail(updatedUser.getEmail());
-                existingUser.setName(updatedUser.getName());
-                existingUser.setSurname(updatedUser.getSurname());
-                existingUser.setAddress(updatedUser.getAddress());
-                existingUser.setEmail(updatedUser.getEmail());
-                existingUser.setRole(updatedUser.getRole());
 
+                //updates for all fields
+                if (isFullUpdate) {
+                    existingUser.setName(updatedUser.getName());
+                    existingUser.setSurname(updatedUser.getSurname());
+                    existingUser.setAddress(updatedUser.getAddress());
+                    existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+                    existingUser.setAge(updatedUser.getAge());
+                    existingUser.setProvince(updatedUser.getProvince());
+                } else {
+                    // for update that only for few fields not all
+                    if (updatedUser.getName() != null) existingUser.setName(updatedUser.getName());
+                    if (updatedUser.getSurname() != null) existingUser.setSurname(updatedUser.getSurname());
+                    if (updatedUser.getAddress() != null) existingUser.setAddress(updatedUser.getAddress());
+                    if (updatedUser.getPhoneNumber() != null) existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+                    if (updatedUser.getAge() != null) existingUser.setAge(updatedUser.getAge());
+                    if (updatedUser.getProvince() != null) existingUser.setProvince(updatedUser.getProvince());
+
+                }
 
                 if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
 
@@ -227,26 +241,73 @@ public class AuthenticationServiceImp implements AuthenticationService {
         return reqRes;
     }
 
+    public UserDTO mapUserToDTO(User user) {
+        UserDTO dto = new UserDTO();
 
-    public RequestResponse getMyInfo(String email){
+        dto.setName(user.getName());
+        dto.setSurname(user.getSurname());
+        dto.setAddress(user.getAddress());
+        dto.setProvince(user.getProvince());
+        dto.setEmail(user.getEmail());
+        dto.setAge(user.getAge());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setRole(user.getRole());
+
+        if (user.getApplications() != null) {
+            List<ApplicationDTO> appliedJobs = user.getApplications().stream()
+                    .map(this::mapApplicationToDTO)
+                    .collect(Collectors.toList());
+            dto.setAppliedJobs(appliedJobs);
+        }
+
+        return dto;
+    }
+
+    private ApplicationDTO mapApplicationToDTO(Application application) {
+        ApplicationDTO dto = new ApplicationDTO();
+
+        dto.setId(application.getId());
+        dto.setJobId(application.getJobId());
+        dto.setApplicationName(application.getApplicationName());
+        dto.setStatus(application.getStatus());
+        dto.setCvPath(application.getCvPath());
+        dto.setCoverLetterPath(application.getCoverLetterPath());
+        dto.setIdDocumentPath(application.getIdDocumentPath());
+        dto.setAppliedDate(application.getAppliedDate());
+
+        User applicant  = application.getApplicant();
+        if (applicant  != null) {
+            dto.setName(applicant .getName());
+            dto.setSurname(applicant .getSurname());
+            dto.setEmail(applicant .getEmail());
+            dto.setPhoneNumber(applicant .getPhoneNumber());
+            dto.setAddress(applicant .getAddress());
+            dto.setAge(applicant .getAge());
+            dto.setProvince(applicant .getProvince());
+        }
+
+        return dto;
+    }
+
+    public RequestResponse getMyInfo(String email) {
         RequestResponse reqRes = new RequestResponse();
         try {
-            Optional<User> userOptional = userRepository.findByEmail(email);
-            if (userOptional.isPresent()) {
-                reqRes.setUser(userOptional.get());
-                reqRes.setStatusCode(200);
-                reqRes.setMessage("successful");
-            } else {
-                reqRes.setStatusCode(404);
-                reqRes.setMessage("User not found for update");
-            }
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new NoSuchElementException("User not found"));
 
-        }catch (Exception e){
+            UserDTO userDTO = mapUserToDTO(user);
+            reqRes.setUserDTO(userDTO);
+            reqRes.setStatusCode(200);
+            reqRes.setMessage("User profile retrieved successfully");
+
+        } catch (NoSuchElementException e) {
+            reqRes.setStatusCode(404);
+            reqRes.setMessage(e.getMessage());
+        } catch (Exception e) {
             reqRes.setStatusCode(500);
             reqRes.setMessage("Error occurred while getting user info: " + e.getMessage());
         }
         return reqRes;
-
     }
 }
 

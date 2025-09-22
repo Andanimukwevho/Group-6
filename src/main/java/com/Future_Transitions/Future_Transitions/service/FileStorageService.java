@@ -1,9 +1,14 @@
 package com.Future_Transitions.Future_Transitions.service;
 
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,5 +32,21 @@ public class FileStorageService {
         }
         Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
         return filename;
+    }
+
+    public Resource loadFileAsResource(String filename) {
+        try {
+            Path filePath = uploadDir.resolve(filename).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists() && resource.isReadable()) {
+                return resource;
+            } else {
+                throw new FileNotFoundException("File not found: " + filename);
+            }
+        } catch (MalformedURLException | FileNotFoundException e) {
+            throw new RuntimeException("Failed to load file: " + filename, e);
+        }
+
     }
 }

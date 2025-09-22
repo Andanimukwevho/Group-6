@@ -29,7 +29,14 @@ public class JobOpeningServiceImp implements JobOpeningService {
         if (admin.getRole() != Role.ADMIN) {
             throw new AccessDeniedException("Only admins can create job openings.");
         }
-
+        jobOpening.setTitle(jobOpening.getTitle());
+        jobOpening.setDescription(jobOpening.getDescription());
+        jobOpening.setMaxAge(jobOpening.getMaxAge());
+        jobOpening.setMinAge(jobOpening.getMinAge());
+        jobOpening.setMinGpa(jobOpening.getMinGpa());
+        jobOpening.setRequirements(jobOpening.getRequirements());
+        jobOpening.setRequiredQualificationsRaw(jobOpening.getRequiredQualificationsRaw());
+        jobOpening.setMinExperience(jobOpening.getMinExperience());
         jobOpening.setPostedDate(LocalDate.now());
         jobOpening.setCreatedBy(admin);
 
@@ -40,7 +47,7 @@ public class JobOpeningServiceImp implements JobOpeningService {
 
 
     @Override
-    public JobOpening updateJob(Long id, JobOpening updatedJob) {
+    public JobOpening updateJob(long id, JobOpening updatedJob) {
         JobOpening existing = findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Job not found with ID: " + id));
         existing.setTitle(updatedJob.getTitle());
@@ -49,14 +56,14 @@ public class JobOpeningServiceImp implements JobOpeningService {
     }
 
     @Override
-    public void deleteJob(Long id) {
+    public void deleteJob(long id) {
         JobOpening job = findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Job not found with ID: " + id));
         jobOpeningRepository.delete(job);
     }
 
     @Override
-    public Optional<JobOpening> findById(Long id) {
+    public Optional<JobOpening> findById(long id) {
         return jobOpeningRepository.findById(id);
     }
 

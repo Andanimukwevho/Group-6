@@ -8,9 +8,9 @@ import java.util.Optional;
 public interface JobOpeningService {
 
     JobOpening createJob(JobOpening jobOpening, User admin);
-    JobOpening updateJob(Long id, JobOpening updatedJob);
-    void deleteJob(Long id);
-    Optional<JobOpening> findById(Long id);
+    JobOpening updateJob(long id, JobOpening updatedJob);
+    void deleteJob(long id);
+    Optional<JobOpening> findById(long id);
     List<JobOpening> findAll();
 
 }

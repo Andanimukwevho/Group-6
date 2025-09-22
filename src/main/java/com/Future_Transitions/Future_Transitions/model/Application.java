@@ -1,30 +1,57 @@
 package com.Future_Transitions.Future_Transitions.model;
 
-
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="application_table")
+@Table(name = "application_table")
 public class Application {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    private Long jobId;
+
     private Province province;
-    private String ApplicationName;
-    private String  coverLetter;
+
+    private String applicationName;
+
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
+
     private String cvPath;
     private String idDocumentPath;
     private String coverLetterPath;
+
     private LocalDate appliedDate;
+
+    @NotNull(message = "maxAge is required")
+    private Integer maxAge;
+
+    @NotNull(message = "minAge is required")
+    private Integer minAge;
+
+    @NotNull(message = "minExperience is required")
+    private Integer minExperience;
+
+    @NotNull(message = "minGpa is required")
+    private Double minGpa;
+
+    @Transient
+    private List<String> candidateQualifications;
+
+    @Column(name = "candidate_qualifications")
+    private String candidateQualificationsRaw;
 
     @ManyToOne
     @JoinColumn(name = "applicant_id")
@@ -34,46 +61,22 @@ public class Application {
     @JoinColumn(name = "job_opening_id")
     private JobOpening jobOpening;
 
+    // Getters & Setters
 
-
-    public ApplicationStatus getStatus() {
-        return status;
+    public long getId() {
+        return id;
     }
 
-    public void setStatus(ApplicationStatus status) {
-        this.status = status;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public User getApplicant() {
-        return applicant;
+    public Long getJobId() {
+        return jobId;
     }
 
-    public void setApplicant(User applicant) {
-        this.applicant = applicant;
-    }
-
-    public JobOpening getJobOpening() {
-        return jobOpening;
-    }
-
-    public void setJobOpening(JobOpening jobOpening) {
-        this.jobOpening = jobOpening;
-    }
-
-    public String getCoverLetter() {
-        return coverLetter;
-    }
-
-    public void setCoverLetter(String coverLetter) {
-        this.coverLetter = coverLetter;
-    }
-
-    public String getApplicationName() {
-        return ApplicationName;
-    }
-
-    public void setApplicationName(String applicationName) {
-        ApplicationName = applicationName;
+    public void setJobId(Long jobId) {
+        this.jobId = jobId;
     }
 
     public Province getProvince() {
@@ -82,6 +85,22 @@ public class Application {
 
     public void setProvince(Province province) {
         this.province = province;
+    }
+
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
+
+    public ApplicationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ApplicationStatus status) {
+        this.status = status;
     }
 
     public String getCvPath() {
@@ -116,11 +135,78 @@ public class Application {
         this.appliedDate = appliedDate;
     }
 
-    public long getId() {
-        return id;
+    public Integer getMaxAge() {
+        return maxAge;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setMaxAge(Integer maxAge) {
+        this.maxAge = maxAge;
+    }
+
+    public Integer getMinAge() {
+        return minAge;
+    }
+
+    public void setMinAge(Integer minAge) {
+        this.minAge = minAge;
+    }
+
+    public Integer getMinExperience() {
+        return minExperience;
+    }
+
+    public void setMinExperience(Integer minExperience) {
+        this.minExperience = minExperience;
+    }
+
+    public Double getMinGpa() {
+        return minGpa;
+    }
+
+    public void setMinGpa(Double minGpa) {
+        this.minGpa = minGpa;
+    }
+
+    public List<String> getCandidateQualifications() {
+        if (candidateQualifications == null && candidateQualificationsRaw != null) {
+            return Arrays.stream(candidateQualificationsRaw.split(","))
+                    .map(String::trim)
+                    .collect(Collectors.toList());
+        }
+        return candidateQualifications;
+    }
+
+    public void setCandidateQualifications(List<String> candidateQualifications) {
+        this.candidateQualifications = candidateQualifications;
+        this.candidateQualificationsRaw = candidateQualifications != null
+                ? String.join(",", candidateQualifications)
+                : null;
+    }
+
+    public String getCandidateQualificationsRaw() {
+        return candidateQualificationsRaw;
+    }
+
+    public void setCandidateQualificationsRaw(String raw) {
+        this.candidateQualificationsRaw = raw;
+        this.candidateQualifications = raw != null
+                ? Arrays.stream(raw.split(",")).map(String::trim).collect(Collectors.toList())
+                : null;
+    }
+
+    public User getApplicant() {
+        return applicant;
+    }
+
+    public void setApplicant(User applicant) {
+        this.applicant = applicant;
+    }
+
+    public JobOpening getJobOpening() {
+        return jobOpening;
+    }
+
+    public void setJobOpening(JobOpening jobOpening) {
+        this.jobOpening = jobOpening;
     }
 }

@@ -36,6 +36,11 @@ spring:
           ssl:
             trust: "*"     #to avoid certification check
 
+    elasticsearch:
+      uris: http://localhost:9200
+      connection-timeout: 5s
+      read-timeout: 5s
+
 jwt:
   secret: JDDwnyo4Bt99yxC3Jh/dol6XN9hkaeoqzANPE2eDg3bEq83JSYoOpBDHVbvV5faD1FL+wcbczfsnegRynV+8tg==
 

@@ -18,7 +18,7 @@ import java.util.UUID;
 import org.springframework.transaction.annotation.Transactional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 @CrossOrigin("*")
 public class ForgottenPasswordTokenController {
 

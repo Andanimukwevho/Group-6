@@ -32,9 +32,6 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Province province;
     @NotBlank(message = "Password is required")
-    @Pattern(
-             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&]{8,}$",
-             message = "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a digit, and a special character")
     private String password;
     @Email(message = "Email should be valid")
     @Column(unique = true)
@@ -48,6 +45,14 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobOpening> createdJobs = new ArrayList<>();
+
+    public List<Application> getApplications() {
+        return applications;
+    }
+
+    public void setApplications(List<Application> applications) {
+        this.applications = applications;
+    }
 
     @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Application> applications = new ArrayList<>();

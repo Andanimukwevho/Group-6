@@ -26,6 +26,17 @@ public class RequestResponse {
     private List<User> UserList ;
     private List<String> roles;
     private String redirectUrl;
+    private UserDTO userDTO;
+    public UserDTO getUserDTO() {
+        return userDTO;
+    }
+
+    public void setUserDTO(UserDTO userDTO) {
+        this.userDTO = userDTO;
+    }
+
+
+
 
     public String getPhoneNumber() {
         return phoneNumber;

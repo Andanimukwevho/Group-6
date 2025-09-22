@@ -53,6 +53,7 @@ public class JobOpeningController {
     @GetMapping
     public ResponseEntity<List<JobOpening>> getAllJobs() {
         return ResponseEntity.ok(jobOpeningService.findAll());
+
     }
 
 }
