@@ -12,6 +12,7 @@ import com.Future_Transitions.Future_Transitions.service.JobOpeningService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,12 +37,12 @@ public class AuthenticateController {
         this.userServiceImp = userServiceImp;
         this.fileStorageService = fileStorageService;
     }
-
+  // the user register
     @PostMapping("/register")
     public ResponseEntity<RequestResponse> register(@Valid @RequestBody RegisterDTO registerDTO) {
         return ResponseEntity.ok(authenticationServiceImp.register(registerDTO));
     }
-
+   //the user and admin logs in
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginDTO loginDTO) {
         LoginResponse response = authenticationServiceImp.login(loginDTO);
@@ -58,62 +59,97 @@ public class AuthenticateController {
     public ResponseEntity<RequestResponse> refreshToken(@RequestBody RefreshedTokenRequest refreshedTokenRequest) {
         return ResponseEntity.ok(authenticationServiceImp.refreshToken(refreshedTokenRequest));
     }
-
+    // the admin gets all users
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getalluser")
     public ResponseEntity<RequestResponse> getAllUsers() {
         return ResponseEntity.ok(authenticationServiceImp.getAllUsers());
     }
-
-    @GetMapping("/useremail")
+   //the
+    @GetMapping("/useremail/{email}")
     public ResponseEntity<RequestResponse> getUserEmail(@PathVariable String email) {
         return ResponseEntity.ok(authenticationServiceImp.getUsersByEmail(email));
     }
-
-    @DeleteMapping("/delete")
+   //the user and admin delete profile
+    @DeleteMapping("/delete/{email}")
     public ResponseEntity<RequestResponse> deleteUser(@PathVariable String email) {
         return ResponseEntity.ok(authenticationServiceImp.deleteUser(email));
     }
-
+    // the admin gets specific users using email
     @GetMapping("/api/admin/get-users/{userId}")
     public ResponseEntity<RequestResponse> getUSerByEmail(@PathVariable String email) {
         return ResponseEntity.ok(authenticationServiceImp.getUsersByEmail(email));
 
     }
 
-    @PutMapping("/api/admin/update/{userEmail}")
-    public ResponseEntity<RequestResponse> updateUser(@PathVariable String email, @RequestBody User user) {
-        return ResponseEntity.ok(authenticationServiceImp.updateUser(email, user));
+    //both admin and user can update profile of user
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PutMapping("/update/{email}")
+    public ResponseEntity<RequestResponse> fullUpdateUser(@PathVariable String email, @RequestBody User user) {
+        return ResponseEntity.ok(authenticationServiceImp.updateUser(email, user, true)); // <-- pass true here
     }
 
-    @GetMapping("/api/admin/get-profile")
+    //both admin and user can update part of their profile
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PostMapping("/updatePartial/{email}")
+    public ResponseEntity<RequestResponse> partialUpdateUser(@PathVariable String email, @RequestBody User user) {
+        return ResponseEntity.ok(authenticationServiceImp.updateUser(email, user, false));
+    }
+
+    //the user can get their profile with jobs applied but issue with admin
+    //needs to ensure only the profile user can see their profile so email is needed
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/get-profile")
     public ResponseEntity<RequestResponse> getMyProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
+        String email = authentication.getName(); // this retrieves the logged-in user's email (username)
         RequestResponse response = authenticationServiceImp.getMyInfo(email);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    @PostMapping("/api/admin/create/post")
-    public ResponseEntity<JobOpening> createJobs(@RequestBody JobOpening jobOpening, Authentication authentication) {
-        User admin = userServiceImp.findByEmail(authentication.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+// ensure to check admin get user profile specific
 
-        JobOpening createJob = jobOpeningService.createJob(jobOpening, admin);
-        return new ResponseEntity<>(createJob, HttpStatus.CREATED);
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/api/admin/get-user")
+    public ResponseEntity<RequestResponse> getUserByEmail(@RequestParam String email) {
+        return ResponseEntity.ok(authenticationServiceImp.getUsersByEmail(email));
     }
 
-    @PutMapping("/api/admin/update/post")
-    public ResponseEntity<JobOpening> updateJobs(@PathVariable long id, @RequestBody JobOpening jobOpening) {
-        JobOpening updatedJob = jobOpeningService.updateJob(id, jobOpening);
-        return ResponseEntity.ok(updatedJob);
-    }
+    // for admin to get all users profile need to check if it contains job applied
 
-    @DeleteMapping("/api/admin/delete/post/{id}")
-    public ResponseEntity<JobOpening> deleteJob(@PathVariable Long id) {
-        JobOpening jobToDelete = jobOpeningService.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job not found with id: " + id));
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @GetMapping("/api/admin/users")
+//    public ResponseEntity<List<UserDTO>> getAllUsers() {
+//        List<UserDTO> users = authenticationServiceImp.getAllUsersWithApplications();
+//        return ResponseEntity.ok(users);
+//    }
 
-        jobOpeningService.deleteJob(id);
-        return ResponseEntity.ok(jobToDelete);
-    }
+
+
+
+
+
+//    @PostMapping("/api/admin/create/post")
+//    public ResponseEntity<JobOpening> createJobs(@RequestBody JobOpening jobOpening, Authentication authentication) {
+//        User admin = userServiceImp.findByEmail(authentication.getName())
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+//
+//        JobOpening createJob = jobOpeningService.createJob(jobOpening, admin);
+//        return new ResponseEntity<>(createJob, HttpStatus.CREATED);
+//    }
+
+//    @PutMapping("/api/admin/update/post")
+//    public ResponseEntity<JobOpening> updateJobs(@PathVariable long id, @RequestBody JobOpening jobOpening) {
+//        JobOpening updatedJob = jobOpeningService.updateJob(id, jobOpening);
+//        return ResponseEntity.ok(updatedJob);
+//    }
+
+//    @DeleteMapping("/api/admin/delete/post/{id}")
+//    public ResponseEntity<JobOpening> deleteJob(@PathVariable Long id) {
+//        JobOpening jobToDelete = jobOpeningService.findById(id)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job not found with id: " + id));
+//
+//        jobOpeningService.deleteJob(id);
+//        return ResponseEntity.ok(jobToDelete);
+//    }
 }
